@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         verbose="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+>
+
+    <filter>
+        <whitelist>
+            <directory>src/Edna</directory>
+        </whitelist>
+    </filter>
+
+    <php>
+        <server name='HTTP_HOST' value='http://ortigra.com' />
+        <server name="SERVER_NAME" value="www.ortigra.com"/>
+        <server name="SERVER_PORT" value="80"/>
+        <server name="REMOTE_ADDR" value="127.1.2.3"/>
+    </php>
+
+    <testsuites>
+        <testsuite name="Edna Test Suite">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

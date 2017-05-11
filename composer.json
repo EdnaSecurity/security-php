@@ -16,9 +16,18 @@
         "guzzlehttp/guzzle": "^6.2",
         "monolog/monolog": "^1.22"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^5.5"
+    },
     "autoload": {
-        "psr-4": {
-            "Edna\\" : "src/Edna"
-        }
+        "psr-4": {"Edna\\" : "src/Edna"}
+    },
+    "autoload-dev": {
+        "psr-4": {"Tests\\" : "tests/Edna"}
+    },
+    "scripts": {
+        "test": [
+            "phpunit"
+        ]
     }
 }

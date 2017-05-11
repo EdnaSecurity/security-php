@@ -21,6 +21,11 @@ class Secure
 	protected $secretkey;
 
 	/**
+	 * http Protocol
+	 */
+	protected $httpProtocol = 'http';
+
+	/**
 	 * Results of the API
 	 */
 	protected $results = null;
@@ -58,7 +63,7 @@ class Secure
 	/**
 	 * Enable cookies
 	 */
-	protected $enable_cookie = true;
+	protected $cookie_enabled = true;
 
 	/**
 	 * Cookie name
@@ -98,10 +103,10 @@ class Secure
 	/**
 	 * Init
 	 */
-	private function __construct($enable_cookie)
+	private function __construct($cookie_enabled)
 	{
 		// set the cookie anble value
-		$this->enable_cookie = $enable_cookie;
+		$this->cookie_enabled = $cookie_enabled;
 
 		// if the cookie is enabled then save the global value
 		$this->cookie_array =& $_COOKIE;
@@ -110,9 +115,9 @@ class Secure
 	/**
 	 * Creates an instance of the current class
 	 */
-	public static function getInstance($enable_cookie = false)
+	public static function getInstance($cookie_enabled = false)
 	{
-		is_bool(static::$instance) ? new self($enable_cookie) : static::$instance;
+		return static::$instance = is_bool(static::$instance) ? new self($cookie_enabled) : static::$instance;
 	}
 
 	/**
@@ -133,9 +138,9 @@ class Secure
 	}
 
 	/**
-	 * Sets the cookie cookies
+	 * Sets the cookie
 	 */
-	public function setCookies($name = '_edna_sc', $value = false, $expire = 3600, $path = '/', $domain = null, $secure = false, $httponly = false)
+	private function setCookie($name = '_edna_sc', $value = false, $expire = 3600, $path = '/', $domain = null, $secure = false, $httponly = false)
 	{
 		// validate the cookie name
 		if ( empty($name) )
@@ -157,11 +162,27 @@ class Secure
 	}
 
 	/**
+	 * Gets the cookie
+	 */
+	private function getCookie()
+	{
+		// if the cookies are enabled then set a cookie
+		if ( ! array_key_exists($this->cookie_name, $this->cookie_array) )
+		{
+			return $this->cookie_array[$this->cookie_name];
+		}
+
+		return null;
+	}
+
+	/**
 	 * This function will set secret and public key
 	 */
 	public function setKeys($secret)
 	{
 		$this->secretkey = $secret;
+
+		return $this;
 	}
 
 	/**
@@ -233,12 +254,64 @@ class Secure
 	/**
 	 * Parse the recieved results to see what action is needed
 	 */
+	public function run($async = false)
+	{
+		// build the domain name or server name
+		$site = substr($_SERVER['SERVER_NAME'], 0, 4) !== "www." ? "www.".$_SERVER['SERVER_NAME'] : $_SERVER['SERVER_NAME'];
+
+		// check if this server is fullfilling requests over 443 or 80
+		if (!empty($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] != 'off' || $_SERVER['HTTPS'] != 0))
+		{
+		    // SSL connection
+		    $this->httpProtocol = 'https';
+		}
+		elseif ( isset($_SERVER['SERVER_PORT']) && ( '443' == $_SERVER['SERVER_PORT'] ) )
+		{
+		    // SSL connection
+		    $this->httpProtocol = 'https';
+		}
+
+		// run cookies if set
+		if ( $this->cookie_enabled )
+		{
+			$this->setCookie();
+		}
+
+		// build query
+		$queryString  = array(
+			'server'	=> json_encode($_SERVER),
+			'site'		=> $site
+		);
+
+		// send the request and save results
+		try
+		{
+			if ( $async )
+			{
+				// send sync request and init the response object
+				$this->sendAsync('secure', $queryString);
+			}
+			else
+			{
+				// send sync request and init the response object
+				$this->sendSync('secure', $queryString);
+			}
+		}
+		catch (\Exception $e)
+		{
+			// do nothing just let the script continue
+			echo $e->getMessage();
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Check the results
+	 */
 	public function _check()
 	{
-		if ( $results = $this->getResults() )
-		{
-			
-		}
+		//
 	}
 
 	/**

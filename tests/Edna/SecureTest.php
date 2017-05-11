@@ -16,9 +16,9 @@ use Edna\Secure;
 
 class SecureTest extends \PHPUnit_Framework_TestCase
 {
-	public $secret   = "aHR0cDovL3d3dy5vcnRpZ3JhLmNvbXNlY3JldA==";
-	public $username = "support@reisslocal.co.uk";
-	public $password = "hello2017";
+	public $secret   = "";
+	public $username = "";
+	public $password = "";
 
 	public function testRun()
 	{

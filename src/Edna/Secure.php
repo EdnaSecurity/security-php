@@ -43,7 +43,7 @@ class Secure
     /**
      * E-DNA API URI
      */
-    protected $uri = "https://dash.e-dna.co/";
+    protected $uri = "http://api.westopbots.com/";
 
     /**
      * API Requests timeout
